@@ -3,10 +3,10 @@ from streamlit_jodit import st_jodit
 import PyPDF2
 import base64
 
-# Postavke stranice
-st.set_page_config(page_title="Tinček Editor PRO", layout="centered")
+# 1. DODANA TVOJA IKONA (page_icon="ikona.ico")
+st.set_page_config(page_title="Tinček Editor PRO", page_icon="ikona.ico", layout="centered")
 
-# BRUTALNI CSS Koji gazi sve Streamlitove defaultne stilove i zaključava tvoj dizajn!
+# CSS koji lomi sve Streamlitove blokade
 st.markdown("""
     <style>
     /* Pozadina i tekst cijele aplikacije */
@@ -15,12 +15,11 @@ st.markdown("""
         color: #ffffff !important;
     }
     
-    /* Skrivanje nepotrebnih menija */
     #MainMenu {visibility: hidden !important;}
     footer {visibility: hidden !important;}
     header {visibility: hidden !important;}
 
-    /* SVI gumbi (i obični i onaj za download) moraju biti ljubičasti */
+    /* Svi glavni gumbi */
     div.stButton > button, div.stDownloadButton > button {
         background-color: #1a0b2e !important;
         color: #d1b3ff !important;
@@ -35,24 +34,49 @@ st.markdown("""
         color: white !important;
     }
     
-    /* Popravak onog ružnog okvira kod učitavanja fajlova */
+    /* POPRAVAK UPLOADERA - Sada farbamo i gumb unutar njega! */
     [data-testid="stFileUploadDropzone"] {
         background-color: #11081f !important;
         border: 1px dashed #6b21a8 !important;
+    }
+    [data-testid="stFileUploadDropzone"] button {
+        background-color: #1a0b2e !important;
         color: #d1b3ff !important;
+        border: 1px solid #6b21a8 !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stFileUploadDropzone"] button:hover {
+        background-color: #2d134d !important;
+        border: 1px solid #9333ea !important;
+        color: white !important;
     }
     [data-testid="stFileUploadDropzone"] * {
         color: #d1b3ff !important;
     }
 
-    /* Tabovi (kartice za Dokumente i Slike) */
-    [data-baseweb="tab"] {
-        background-color: transparent !important;
-        color: #a3a3a3 !important;
-    }
-    [aria-selected="true"] {
-        border-bottom-color: #9333ea !important;
+    /* PRETVARANJE TABOVA (Dokumenti/Slike) U GUMBE S OKVIROM */
+    button[data-baseweb="tab"] {
+        background-color: #1a0b2e !important;
         color: #d1b3ff !important;
+        border: 1px solid #6b21a8 !important;
+        border-radius: 8px !important;
+        margin-right: 10px !important;
+        padding: 8px 16px !important;
+    }
+    button[data-baseweb="tab"]:hover {
+        background-color: #2d134d !important;
+        border: 1px solid #9333ea !important;
+        color: white !important;
+    }
+    /* Kad je tab kliknut (aktivan), malo svijetli jače */
+    button[data-baseweb="tab"][aria-selected="true"] {
+        background-color: #3b176b !important;
+        border: 2px solid #a855f7 !important;
+        color: white !important;
+    }
+    /* Skrivamo onu ružnu Streamlit crtu ispod tabova */
+    div[data-baseweb="tab-highlight"] {
+        display: none !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -63,7 +87,7 @@ if "moj_tekst" not in st.session_state:
     st.session_state.moj_tekst = ""
 
 # ZONA ZA UČITAVANJE
-tab1, tab2 = st.tabs(["📄 Dokumenti (PDF/TXT)", "🖼️ Slike"])
+tab1, tab2 = st.tabs(["📄 Dokumenti", "🖼️ Slike"])
 
 with tab1:
     uploaded_doc = st.file_uploader("Odaberi dokument...", type=["pdf", "txt"])
@@ -97,7 +121,6 @@ with tab2:
 
 st.divider()
 
-# Prisiljavamo Word editor da bude zaista crn, a ne onako sivi
 postavke = {
     'minHeight': 500,
     'theme': 'dark',
