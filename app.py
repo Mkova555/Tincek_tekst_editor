@@ -2,14 +2,14 @@ import streamlit as st
 
 st.set_page_config(page_title="Tinček Editor", layout="centered")
 
-# Skrivamo viškove da na mobitelu izgleda kao prava aplikacija
+# ISPRAVLJENO: Ovdje je bila greška, sada piše unsafe_allow_html=True
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
     footer {visibility: hidden;}
     header {visibility: hidden;}
     </style>
-    """, unsafe_allow_status=True)
+    """, unsafe_allow_html=True)
 
 st.title("📝 Tinček Editor")
 
