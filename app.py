@@ -5,10 +5,9 @@ import base64
 
 st.set_page_config(page_title="Tinček Editor PRO", page_icon="ikona.ico", layout="centered")
 
-# TOTALNI RAT STREAMLIT DIZAJNU
 st.markdown("""
     <style>
-    /* Pozadina i tekst cijele aplikacije */
+    /* Osnovna pozadina */
     .stApp {
         background-color: #0b0b0f !important;
         color: #ffffff !important;
@@ -18,7 +17,7 @@ st.markdown("""
     footer {visibility: hidden !important;}
     header {visibility: hidden !important;}
 
-    /* Svi glavni gumbi ispod editora */
+    /* SVI GUMBI (glavni, preuzimanje, i ovi s ikonama) */
     div.stButton > button, div.stDownloadButton > button {
         background-color: #1a0b2e !important;
         color: #d1b3ff !important;
@@ -26,59 +25,69 @@ st.markdown("""
         border-radius: 8px !important;
         width: 100% !important;
         font-weight: bold !important;
+        padding: 10px !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
     }
     div.stButton > button:hover, div.stDownloadButton > button:hover {
         background-color: #2d134d !important;
         border: 1px solid #9333ea !important;
         color: white !important;
+        box-shadow: 0 6px 8px rgba(147, 51, 234, 0.2) !important;
     }
     
-    /* --- UPLOAD OKVIR (DRAG & DROP) --- */
-    /* Glavni okvir */
+    /* --- UPLOAD OKVIR (SADA IZGLEDA KAO GUMB 'PREUZMI') --- */
+    /* Ubijamo sivu pozadinu skroz na nulu */
+    [data-testid="stFileUploader"] {
+        background-color: transparent !important;
+    }
+    
     [data-testid="stFileUploadDropzone"] {
-        background-color: #11081f !important;
-        border: 2px dashed #9333ea !important;
-        border-radius: 12px !important;
+        background-color: #1a0b2e !important; /* Ista boja kao gumb */
+        border: 1px solid #6b21a8 !important; /* Puni rub, a ne isprekidan! */
+        border-radius: 8px !important;
         padding: 20px !important;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.3) !important;
     }
     
-    /* Sav tekst i opisi unutar okvira */
+    [data-testid="stFileUploadDropzone"]:hover {
+        background-color: #2d134d !important;
+        border: 1px solid #9333ea !important;
+    }
+    
+    /* Tekst unutar uploadera */
     [data-testid="stFileUploadDropzone"] div, 
     [data-testid="stFileUploadDropzone"] span, 
     [data-testid="stFileUploadDropzone"] small {
         color: #d1b3ff !important;
     }
     
-    /* Ikona oblaka */
+    /* Oblak ikona */
     [data-testid="stFileUploadDropzone"] svg {
-        fill: #9333ea !important;
-        color: #9333ea !important;
+        fill: #d1b3ff !important;
     }
 
-    /* Gumb 'Browse files' unutar okvira */
+    /* Mali gumb 'Browse files' unutar okvira */
     [data-testid="stFileUploadDropzone"] button {
-        background-color: #1a0b2e !important;
-        color: #d1b3ff !important;
-        border: 1px solid #6b21a8 !important;
-        border-radius: 8px !important;
+        background-color: #3b176b !important;
+        color: #ffffff !important;
+        border: 1px solid #a855f7 !important;
+        border-radius: 6px !important;
+        padding: 4px 12px !important;
+        font-weight: normal !important;
     }
     [data-testid="stFileUploadDropzone"] button:hover {
-        background-color: #2d134d !important;
-        border: 1px solid #a855f7 !important;
-        color: white !important;
+        background-color: #581c87 !important;
+        border: 1px solid #d8b4fe !important;
     }
 
-    /* Izgled okvira KADA SE UČITA FAJL (da ne bude sivo) */
+    /* Kad se fajl učita (da ubijemo onaj bijeli/sivi pravokutnik) */
     [data-testid="stFileUploaderFile"] {
-        background-color: #1a0b2e !important;
-        border: 1px solid #6b21a8 !important;
+        background-color: #2d134d !important;
+        border: 1px solid #9333ea !important;
         border-radius: 8px !important;
     }
     [data-testid="stFileUploaderFileName"] {
         color: white !important;
-    }
-    [data-testid="stFileUploaderFile"] svg {
-        fill: #d1b3ff !important;
     }
 
     /* --- TABOVI NA VRHU --- */
@@ -103,12 +112,6 @@ st.markdown("""
     div[data-baseweb="tab-highlight"] {
         display: none !important;
     }
-    
-    /* Uklanjamo bijele rubove oko samog Jodit editora */
-    iframe {
-        border-radius: 8px !important;
-        border: 1px solid #6b21a8 !important;
-    }
     </style>
     """, unsafe_allow_html=True)
 
@@ -130,20 +133,23 @@ with tab1:
                 tekst = stranica.extract_text()
                 if tekst:
                     izvuceni_tekst += tekst + "<br>"
-            if st.button("Učitaj PDF u editor"):
+            # DODANA IKONA KAO U TVOJOJ APP
+            if st.button("📑 Učitaj PDF u editor"):
                 st.session_state.moj_tekst += izvuceni_tekst
                 st.rerun()
 
         elif uploaded_doc.name.endswith('.txt'):
             tekst_iz_fajla = uploaded_doc.getvalue().decode("utf-8")
-            if st.button("Učitaj TXT u editor"):
+            # DODANA IKONA KAO U TVOJOJ APP
+            if st.button("📝 Učitaj TXT u editor"):
                 st.session_state.moj_tekst += tekst_iz_fajla.replace('\n', '<br>')
                 st.rerun()
 
 with tab2:
     uploaded_img = st.file_uploader("Odaberi sliku iz galerije", type=["png", "jpg", "jpeg"])
     if uploaded_img is not None:
-        if st.button("Umetni sliku u tekst"):
+        # DODANA IKONA KAO U TVOJOJ APP
+        if st.button("✨ Umetni sliku u tekst"):
             base64_slika = base64.b64encode(uploaded_img.getvalue()).decode("utf-8")
             format_slike = uploaded_img.name.split('.')[-1]
             img_tag = f'<br><img src="data:image/{format_slike};base64,{base64_slika}" style="max-width: 100%; border-radius: 8px; border: 1px solid #9333ea;"><br>'
@@ -152,7 +158,6 @@ with tab2:
 
 st.divider()
 
-# Editor postavke
 postavke = {
     'minHeight': 500,
     'theme': 'dark',
