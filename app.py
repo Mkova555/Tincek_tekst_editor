@@ -6,36 +6,53 @@ import base64
 # Postavke stranice
 st.set_page_config(page_title="Tinček Editor PRO", layout="centered")
 
-# CSS za mračni dizajn
+# BRUTALNI CSS Koji gazi sve Streamlitove defaultne stilove i zaključava tvoj dizajn!
 st.markdown("""
     <style>
+    /* Pozadina i tekst cijele aplikacije */
     .stApp {
-        background-color: #0b0b0f;
-        color: #ffffff;
-    }
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
-
-    div.stButton > button {
-        background-color: #1a0b2e;
-        color: #d1b3ff;
-        border: 1px solid #6b21a8;
-        border-radius: 8px;
-        width: 100%;
-        font-weight: bold;
-    }
-    div.stButton > button:hover {
-        background-color: #2d134d;
-        border: 1px solid #9333ea;
-        color: white;
+        background-color: #0b0b0f !important;
+        color: #ffffff !important;
     }
     
-    .stFileUploader {
-        background-color: #11081f;
-        border: 1px dashed #6b21a8;
-        border-radius: 8px;
-        padding: 10px;
+    /* Skrivanje nepotrebnih menija */
+    #MainMenu {visibility: hidden !important;}
+    footer {visibility: hidden !important;}
+    header {visibility: hidden !important;}
+
+    /* SVI gumbi (i obični i onaj za download) moraju biti ljubičasti */
+    div.stButton > button, div.stDownloadButton > button {
+        background-color: #1a0b2e !important;
+        color: #d1b3ff !important;
+        border: 1px solid #6b21a8 !important;
+        border-radius: 8px !important;
+        width: 100% !important;
+        font-weight: bold !important;
+    }
+    div.stButton > button:hover, div.stDownloadButton > button:hover {
+        background-color: #2d134d !important;
+        border: 1px solid #9333ea !important;
+        color: white !important;
+    }
+    
+    /* Popravak onog ružnog okvira kod učitavanja fajlova */
+    [data-testid="stFileUploadDropzone"] {
+        background-color: #11081f !important;
+        border: 1px dashed #6b21a8 !important;
+        color: #d1b3ff !important;
+    }
+    [data-testid="stFileUploadDropzone"] * {
+        color: #d1b3ff !important;
+    }
+
+    /* Tabovi (kartice za Dokumente i Slike) */
+    [data-baseweb="tab"] {
+        background-color: transparent !important;
+        color: #a3a3a3 !important;
+    }
+    [aria-selected="true"] {
+        border-bottom-color: #9333ea !important;
+        color: #d1b3ff !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -45,7 +62,7 @@ st.title("🛠️ Tinček Editor PRO")
 if "moj_tekst" not in st.session_state:
     st.session_state.moj_tekst = ""
 
-# ZONA ZA UČITAVANJE (podijeljeno u dva taba zbog uštede prostora na mobitelu)
+# ZONA ZA UČITAVANJE
 tab1, tab2 = st.tabs(["📄 Dokumenti (PDF/TXT)", "🖼️ Slike"])
 
 with tab1:
@@ -72,23 +89,24 @@ with tab2:
     uploaded_img = st.file_uploader("Odaberi sliku iz galerije...", type=["png", "jpg", "jpeg"])
     if uploaded_img is not None:
         if st.button("Umetni sliku u tekst"):
-            # Pretvaranje slike u format koji se može prikazati unutar teksta
             base64_slika = base64.b64encode(uploaded_img.getvalue()).decode("utf-8")
             format_slike = uploaded_img.name.split('.')[-1]
-            # HTML tag za sliku koji se prilagođava širini ekrana na mobitelu
             img_tag = f'<br><img src="data:image/{format_slike};base64,{base64_slika}" style="max-width: 100%; border-radius: 8px;"><br>'
             st.session_state.moj_tekst += img_tag
             st.rerun()
 
 st.divider()
 
-# Postavke za Word editor
+# Prisiljavamo Word editor da bude zaista crn, a ne onako sivi
 postavke = {
     'minHeight': 500,
-    'theme': 'dark'
+    'theme': 'dark',
+    'style': {
+        'background': '#0b0b0f', 
+        'color': '#ffffff'
+    }
 }
 
-# Pravi Word editor
 tekst = st_jodit(value=st.session_state.moj_tekst, config=postavke)
 
 if tekst:
@@ -96,7 +114,6 @@ if tekst:
 
 st.divider()
 
-# Akcije ispod editora
 col1, col2 = st.columns(2)
 
 with col1:
