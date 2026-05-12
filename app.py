@@ -1,8 +1,10 @@
 import streamlit as st
+from streamlit_jodit import st_jodit
 
+# Postavke stranice
 st.set_page_config(page_title="Tinček Editor", layout="centered")
 
-# ISPRAVLJENO: Ovdje je bila greška, sada piše unsafe_allow_html=True
+# Skrivamo suvišne menije da izgleda kao prava aplikacija na mobitelu
 st.markdown("""
     <style>
     #MainMenu {visibility: hidden;}
@@ -13,32 +15,32 @@ st.markdown("""
 
 st.title("📝 Tinček Editor")
 
-# Pamćenje teksta
+# Pamćenje teksta da se ne obriše prilikom rotacije ekrana
 if "moj_tekst" not in st.session_state:
     st.session_state.moj_tekst = ""
 
-# Standardni, neuništivi prostor za unos teksta
-tekst = st.text_area(
-    "Počni pisati ispod:", 
-    value=st.session_state.moj_tekst, 
-    height=400,
-    placeholder="Tvoj tekst ide ovdje..."
-)
+# Postavke za Word editor (npr. početna visina)
+postavke = {
+    'minHeight': 450,
+}
 
-# Spremanje
+# Pravi Word editor s gumbima
+tekst = st_jodit(value=st.session_state.moj_tekst, config=postavke)
+
 if tekst:
     st.session_state.moj_tekst = tekst
 
 st.divider()
 
+# Akcije ispod editora
 col1, col2 = st.columns(2)
 
 with col1:
     st.download_button(
-        label="📥 Preuzmi tekst",
+        label="📥 Preuzmi dokument",
         data=tekst,
-        file_name="moj_dokument.txt",
-        mime="text/plain",
+        file_name="moj_dokument.html",
+        mime="text/html",
     )
 
 with col2:
