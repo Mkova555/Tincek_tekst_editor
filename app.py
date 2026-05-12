@@ -3,10 +3,9 @@ from streamlit_jodit import st_jodit
 import PyPDF2
 import base64
 
-# 1. DODANA TVOJA IKONA (page_icon="ikona.ico")
 st.set_page_config(page_title="Tinček Editor PRO", page_icon="ikona.ico", layout="centered")
 
-# CSS koji lomi sve Streamlitove blokade
+# TOTALNI RAT STREAMLIT DIZAJNU
 st.markdown("""
     <style>
     /* Pozadina i tekst cijele aplikacije */
@@ -19,7 +18,7 @@ st.markdown("""
     footer {visibility: hidden !important;}
     header {visibility: hidden !important;}
 
-    /* Svi glavni gumbi */
+    /* Svi glavni gumbi ispod editora */
     div.stButton > button, div.stDownloadButton > button {
         background-color: #1a0b2e !important;
         color: #d1b3ff !important;
@@ -34,11 +33,29 @@ st.markdown("""
         color: white !important;
     }
     
-    /* POPRAVAK UPLOADERA - Sada farbamo i gumb unutar njega! */
+    /* --- UPLOAD OKVIR (DRAG & DROP) --- */
+    /* Glavni okvir */
     [data-testid="stFileUploadDropzone"] {
         background-color: #11081f !important;
-        border: 1px dashed #6b21a8 !important;
+        border: 2px dashed #9333ea !important;
+        border-radius: 12px !important;
+        padding: 20px !important;
     }
+    
+    /* Sav tekst i opisi unutar okvira */
+    [data-testid="stFileUploadDropzone"] div, 
+    [data-testid="stFileUploadDropzone"] span, 
+    [data-testid="stFileUploadDropzone"] small {
+        color: #d1b3ff !important;
+    }
+    
+    /* Ikona oblaka */
+    [data-testid="stFileUploadDropzone"] svg {
+        fill: #9333ea !important;
+        color: #9333ea !important;
+    }
+
+    /* Gumb 'Browse files' unutar okvira */
     [data-testid="stFileUploadDropzone"] button {
         background-color: #1a0b2e !important;
         color: #d1b3ff !important;
@@ -47,14 +64,24 @@ st.markdown("""
     }
     [data-testid="stFileUploadDropzone"] button:hover {
         background-color: #2d134d !important;
-        border: 1px solid #9333ea !important;
+        border: 1px solid #a855f7 !important;
         color: white !important;
     }
-    [data-testid="stFileUploadDropzone"] * {
-        color: #d1b3ff !important;
+
+    /* Izgled okvira KADA SE UČITA FAJL (da ne bude sivo) */
+    [data-testid="stFileUploaderFile"] {
+        background-color: #1a0b2e !important;
+        border: 1px solid #6b21a8 !important;
+        border-radius: 8px !important;
+    }
+    [data-testid="stFileUploaderFileName"] {
+        color: white !important;
+    }
+    [data-testid="stFileUploaderFile"] svg {
+        fill: #d1b3ff !important;
     }
 
-    /* PRETVARANJE TABOVA (Dokumenti/Slike) U GUMBE S OKVIROM */
+    /* --- TABOVI NA VRHU --- */
     button[data-baseweb="tab"] {
         background-color: #1a0b2e !important;
         color: #d1b3ff !important;
@@ -68,15 +95,19 @@ st.markdown("""
         border: 1px solid #9333ea !important;
         color: white !important;
     }
-    /* Kad je tab kliknut (aktivan), malo svijetli jače */
     button[data-baseweb="tab"][aria-selected="true"] {
         background-color: #3b176b !important;
         border: 2px solid #a855f7 !important;
         color: white !important;
     }
-    /* Skrivamo onu ružnu Streamlit crtu ispod tabova */
     div[data-baseweb="tab-highlight"] {
         display: none !important;
+    }
+    
+    /* Uklanjamo bijele rubove oko samog Jodit editora */
+    iframe {
+        border-radius: 8px !important;
+        border: 1px solid #6b21a8 !important;
     }
     </style>
     """, unsafe_allow_html=True)
@@ -90,7 +121,7 @@ if "moj_tekst" not in st.session_state:
 tab1, tab2 = st.tabs(["📄 Dokumenti", "🖼️ Slike"])
 
 with tab1:
-    uploaded_doc = st.file_uploader("Odaberi dokument...", type=["pdf", "txt"])
+    uploaded_doc = st.file_uploader("Odaberi dokument (PDF ili TXT)", type=["pdf", "txt"])
     if uploaded_doc is not None:
         if uploaded_doc.name.endswith('.pdf'):
             pdf_reader = PyPDF2.PdfReader(uploaded_doc)
@@ -110,17 +141,18 @@ with tab1:
                 st.rerun()
 
 with tab2:
-    uploaded_img = st.file_uploader("Odaberi sliku iz galerije...", type=["png", "jpg", "jpeg"])
+    uploaded_img = st.file_uploader("Odaberi sliku iz galerije", type=["png", "jpg", "jpeg"])
     if uploaded_img is not None:
         if st.button("Umetni sliku u tekst"):
             base64_slika = base64.b64encode(uploaded_img.getvalue()).decode("utf-8")
             format_slike = uploaded_img.name.split('.')[-1]
-            img_tag = f'<br><img src="data:image/{format_slike};base64,{base64_slika}" style="max-width: 100%; border-radius: 8px;"><br>'
+            img_tag = f'<br><img src="data:image/{format_slike};base64,{base64_slika}" style="max-width: 100%; border-radius: 8px; border: 1px solid #9333ea;"><br>'
             st.session_state.moj_tekst += img_tag
             st.rerun()
 
 st.divider()
 
+# Editor postavke
 postavke = {
     'minHeight': 500,
     'theme': 'dark',
