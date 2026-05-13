@@ -1,10 +1,10 @@
 import streamlit as st
-from streamlit_jodit import st_jodit
-import PyPDF2
+from streamlit_jodit import st_jodit  # pyright: ignore[reportMissingImports]
+import PyPDF2  # pyright: ignore[reportMissingImports]
 import base64
 import re
 from io import BytesIO
-from xhtml2pdf import pisa
+from xhtml2pdf import pisa  # pyright: ignore[reportMissingImports]
 
 # 1. OSNOVNE POSTAVKE I IKONA
 st.set_page_config(
