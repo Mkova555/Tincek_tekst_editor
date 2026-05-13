@@ -1,3 +1,4 @@
 streamlit
 streamlit-jodit
 PyPDF2
+xhtml2pdf
